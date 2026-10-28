@@ -24,17 +24,12 @@
                       (- (math/pow side 2) (inc n))))))
        sum))
 
-(def parts {"1" p1 "2" p2 "3" p3})
-
 (defn main [_ part &]
-  (def solve (get parts part))
-  (unless solve
-    (eprint "usage: janet main.janet <1|2|3> < input")
-    (os/exit 1))
+  (def solve
+    (case part
+      "1" p1
+      "2" p2
+      "3" p3
+      (do (eprint "usage: janet main.janet <1|2|3> < input")
+          (os/exit 1))))
   (pp (solve (file/read stdin :all))))
-
-(comment
-  (peg/match parser (slurp "2026/d1/ex.txt"))
-  (p1 (slurp "2026/d1/in1.txt"))
-  (p2 (slurp "2026/d1/in2.txt"))
-  (p3 (slurp "2026/d1/in3.txt")))

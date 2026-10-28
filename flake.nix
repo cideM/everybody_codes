@@ -1,8 +1,8 @@
 {
-  description = "Janet flake";
+  description = "Everybody Codes dev shell";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?rev=36fcc808a13782146ab0549ad52c27551af5c49f";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     spork = {
       url = "github:janet-lang/spork";
@@ -55,18 +55,30 @@
             runHook postInstall
           '';
         };
+
+        # `paste-url <file>` generates a topaz.github.io/paste link. The script
+        # lives in ./paste-url.sh; this wrapper pins its dependencies to nixpkgs.
+        pasteUrl = pkgs.writeShellApplication {
+          name = "paste-url";
+          runtimeInputs = [pkgs.xz pkgs.coreutils];
+          text = builtins.readFile ./paste-url.sh;
+        };
       in {
         packages.spork = sporkPkg;
+        packages.paste-url = pasteUrl;
 
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
-            coreutils
-            jq
             alejandra
-            tokei
+            coreutils
             janet
             jpm
+            jq
+            pasteUrl
             sporkPkg
+            tokei
+            beamPackages.erlang
+            gleam
           ];
 
           # Makes `(import spork/...)` work in plain `janet`, like `jpm -l` did.
